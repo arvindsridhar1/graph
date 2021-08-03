@@ -31,8 +31,10 @@ import support.graph.CS16Decorator;
  */
 public class MyDecorator<K, V> implements CS16Decorator<K, V> {
 
-  public MyDecorator() {
+  private HashMap<K, V> _myHashMap;
 
+  public MyDecorator() {
+    _myHashMap = new HashMap<K,V>();
   }
 
   /**
@@ -44,7 +46,7 @@ public class MyDecorator<K, V> implements CS16Decorator<K, V> {
    */
   @Override
   public V getDecoration(K key) {
-      return null;
+      return _myHashMap.get(key);
   }
 
   /**
@@ -57,7 +59,7 @@ public class MyDecorator<K, V> implements CS16Decorator<K, V> {
    */
   @Override
   public void setDecoration(K key, V value) {
-
+      _myHashMap.put(key, value);
   }
 
   /**
@@ -69,7 +71,7 @@ public class MyDecorator<K, V> implements CS16Decorator<K, V> {
    */
   @Override
   public boolean hasDecoration(K key) {
-    return false;
+      return _myHashMap.containsKey(key);
   }
 
   /**
@@ -82,7 +84,7 @@ public class MyDecorator<K, V> implements CS16Decorator<K, V> {
    */
   @Override
   public V removeDecoration(K key) {
-    return null;
+      return _myHashMap.remove(key);
   }
 
   /**
@@ -92,6 +94,6 @@ public class MyDecorator<K, V> implements CS16Decorator<K, V> {
    */
   @Override
   public Set<K> getKeys() {
-    return null;
+      return _myHashMap.keySet();
   }
 }
