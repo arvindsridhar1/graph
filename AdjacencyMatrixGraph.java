@@ -50,6 +50,8 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
     private int _numVertices;
     // boolean that keeps track of directedness of graph
     private boolean _directed;
+    private ArrayList<Integer> _unique_indices;
+
 
     /**
      * Constructor for your Graph, where among other things, you will most
@@ -61,12 +63,22 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
      */
     public AdjacencyMatrixGraph(boolean directed) {
         _adjMatrix = this.makeEmptyEdgeArray();
-        // TODO: fill in the rest here!
         _vertices = new HashSet<CS16Vertex<V>>();
         _edges = new HashSet<CS16Edge<V>>();
         _numVertices = 0;
         _directed = false;
+        if(directed == true){
+            this.toggleDirected();
+        }
+        _unique_indices = new ArrayList<Integer>();
+        this.fillUniqueIndices();
 
+    }
+
+    public void fillUniqueIndices(){
+        for(int i = 0; i < MAX_VERTICES; i++){
+            _unique_indices.add(i);
+        }
     }
 
     /**
@@ -123,7 +135,11 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
      */
     @Override
     public CS16Vertex<V> insertVertex(V vertElement) {
-        return null;
+        int unique_index = _unique_indices.remove(0);
+        CS16Vertex<V> insertableVertex = new GraphVertex<V>(vertElement);
+        insertableVertex.setVertexNumber(unique_index);
+        _vertices.add(insertableVertex);
+        return insertableVertex;
     }
 
     /**
@@ -152,7 +168,18 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
     @Override
     public CS16Edge<V> insertEdge(CS16Vertex<V> v1, CS16Vertex<V> v2, Integer edgeElement)
             throws InvalidVertexException {
-        return null;
+        if(v1 == null || v2 == null){
+            throw new InvalidVertexException("Vertex is null");
+        }
+        CS16Edge<V> insertableEdge = new GraphEdge<V>(edgeElement);
+        insertableEdge.setVertexOne(v1);
+        insertableEdge.setVertexTwo(v2);
+        _edges.add(insertableEdge);
+        _adjMatrix[v1.getVertexNumber()][v2.getVertexNumber()] = insertableEdge;
+        if(_directed == false){
+            _adjMatrix[v2.getVertexNumber()][v1.getVertexNumber()] = insertableEdge;
+        }
+        return insertableEdge;
     }
 
     /**
@@ -172,7 +199,29 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
      */
     @Override
     public V removeVertex(CS16Vertex<V> vert) throws InvalidVertexException {
-        return null;
+        if (vert == null){
+            throw new InvalidVertexException("null vertex");
+        }
+        Iterator<CS16Edge<V>> incomingEdges = incomingEdges(vert);
+        Iterator<CS16Edge<V>> outgoingEdges = outgoingEdges(vert);
+
+        if(_directed = false){
+            while(incomingEdges.hasNext()){
+                removeEdge(incomingEdges.next());
+            }
+        }
+        if(_directed = true){
+            while(incomingEdges.hasNext()){
+                removeEdge(incomingEdges.next());
+            }
+            while(outgoingEdges.hasNext()){
+                removeEdge(outgoingEdges.next());
+            }
+        }
+
+        _vertices.remove(vert);
+
+        return vert.element();
     }
 
     /**
@@ -192,7 +241,16 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
      */
     @Override
     public Integer removeEdge(CS16Edge<V> edge) throws InvalidEdgeException {
-        return null;
+        CS16Vertex<V> v1 = edge.getVertexOne();
+        CS16Vertex<V> v2 = edge.getVertexTwo();
+        _edges.remove(edge);
+
+        _adjMatrix[v1.getVertexNumber()][v2.getVertexNumber()] = null;
+        if(_directed == false){
+            _adjMatrix[v2.getVertexNumber()][v1.getVertexNumber()] = null;
+        }
+
+        return edge.element();
     }
 
     /**
@@ -202,7 +260,7 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
      * 
      * If the graph is directed, then two nodes are connected if there is an
      * edge from the first vertex to the second. 
-     * If the graph is undirectd, then two nodes are connected if there is an
+     * If the graph is undirected, then two nodes are connected if there is an
      * edge from the first vertex to the second and vice versa. 
      *
      * <p>
@@ -222,6 +280,26 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
     @Override
     public CS16Edge<V> connectingEdge(CS16Vertex<V> v1, CS16Vertex<V> v2)
             throws InvalidVertexException, NoSuchEdgeException {
+        if(v1 == null || v2 == null){
+            throw new InvalidVertexException("vertex is null");
+        }
+        if(_directed = true){
+            if (_adjMatrix[v1.getVertexNumber()][v2.getVertexNumber()] != null){
+                return _adjMatrix[v1.getVertexNumber()][v2.getVertexNumber()];
+            }
+            else{
+                throw new NoSuchEdgeException("edge does not exist");
+            }
+        }
+        if(_directed = false){
+            if (_adjMatrix[v1.getVertexNumber()][v2.getVertexNumber()] != null &&
+                    _adjMatrix[v2.getVertexNumber()][v1.getVertexNumber()] != null){
+                return _adjMatrix[v1.getVertexNumber()][v2.getVertexNumber()];
+            }
+            else{
+                throw new NoSuchEdgeException("edge does not exist");
+            }
+        }
         return null;
     }
 
@@ -240,7 +318,22 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
      */
     @Override
     public Iterator<CS16Edge<V>> incomingEdges(CS16Vertex<V> vert) throws InvalidVertexException {
-        return null;
+        if(vert == null){
+            throw new InvalidVertexException("null vertex");
+        }
+        ArrayList<CS16Edge<V>> incomingEdges = new ArrayList<CS16Edge<V>>();
+
+        for (int i = 0; i < _adjMatrix.length; i++){
+            if(_adjMatrix[i][vert.getVertexNumber()] != null){
+                incomingEdges.add(_adjMatrix[i][vert.getVertexNumber()]);
+            }
+            if(_directed = false){
+                if(_adjMatrix[vert.getVertexNumber()][i] != null){
+                    incomingEdges.add(_adjMatrix[vert.getVertexNumber()][i]);
+                }
+            }
+        }
+        return incomingEdges.iterator();
     }
     
     /**
@@ -257,7 +350,23 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
      */
     @Override
     public Iterator<CS16Edge<V>> outgoingEdges(CS16Vertex vert) throws InvalidVertexException {
-	   return null;
+        if(vert == null){
+            throw new InvalidVertexException("null vertex");
+        }
+
+        ArrayList<CS16Edge<V>> outgoingEdges = new ArrayList<CS16Edge<V>>();
+
+        for (int i = 0; i < _adjMatrix.length; i++){
+            if(_adjMatrix[vert.getVertexNumber()][i] != null){
+                outgoingEdges.add(_adjMatrix[vert.getVertexNumber()][i]);
+            }
+            if(_directed = false){
+                if(_adjMatrix[i][vert.getVertexNumber()] != null){
+                    outgoingEdges.add(_adjMatrix[i][vert.getVertexNumber()]);
+                }
+            }
+        }
+        return outgoingEdges.iterator();
     }
 
     /**
@@ -274,7 +383,22 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
      */
     @Override
     public int numOutgoingEdges(CS16Vertex<V> vert) throws InvalidVertexException, DirectionException {
-        return 0;
+        if(vert == null){
+            throw new InvalidVertexException("null vertex");
+        }
+        if(_directed = false){
+            throw new DirectionException("graph is undirected");
+        }
+
+        Iterator<CS16Edge<V>> outgoingEdges = outgoingEdges(vert);
+
+        int numOutgoingEdges = 0;
+        while(outgoingEdges.hasNext()){
+            outgoingEdges.next();
+            numOutgoingEdges ++;
+        }
+
+        return numOutgoingEdges;
     }
 
     /**
@@ -303,7 +427,21 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
     @Override
     public CS16Vertex<V> opposite(CS16Vertex<V> vert, CS16Edge<V> edge)
             throws InvalidVertexException, InvalidEdgeException, NoSuchVertexException {
-        return null;
+        if(vert == null){
+            throw new InvalidVertexException("null vertex");
+        }
+        if(edge == null){
+            throw new InvalidEdgeException("null edge");
+        }
+        if(vert == edge.getVertexTwo()){
+            return edge.getVertexOne();
+        }
+        else if (vert == edge.getVertexOne()){
+            return edge.getVertexTwo();
+        }
+        else{
+            throw new NoSuchVertexException("No such vertex exists");
+        }
     }
 
     /**
@@ -325,7 +463,15 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
      */
     @Override
     public List<CS16Vertex<V>> endVertices(CS16Edge<V> e) throws InvalidEdgeException {
-        return null;
+        if(e == null){
+            throw new InvalidEdgeException("edge is null");
+        }
+
+        ArrayList<CS16Vertex<V>> vertices = new ArrayList<CS16Vertex<V>>();
+        vertices.add(e.getVertexOne());
+        vertices.add(e.getVertexTwo());
+
+        return vertices;
     }
 
     /**
@@ -348,6 +494,20 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
      */
     @Override
     public boolean areAdjacent(CS16Vertex<V> v1, CS16Vertex<V> v2) throws InvalidVertexException {
+        if(v1 == null || v2 == null){
+            throw new InvalidVertexException("vertex is null");
+        }
+        if(_directed = true){
+            if(_adjMatrix[v1.getVertexNumber()][v2.getVertexNumber()] != null){
+                return true;
+            }
+        }
+        if(_directed = false){
+            if(_adjMatrix[v1.getVertexNumber()][v2.getVertexNumber()] != null &&
+                    _adjMatrix[v2.getVertexNumber()][v1.getVertexNumber()] != null){
+                return true;
+            }
+        }
         return false;
     }
 
@@ -356,6 +516,7 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
      */
     @Override
     public void toggleDirected() {
+        _directed = true;
     }
 
     /**
@@ -370,6 +531,9 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
      */
     @Override
     public void clear() {
+        _vertices.clear();
+        _edges.clear();
+        _adjMatrix = makeEmptyEdgeArray();
     }
 
     /**
@@ -377,8 +541,14 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
      */
     @Override
 	public int getNumVertices() {
-		//TODO: Edit this
-		return 0;
+		Iterator<CS16Vertex<V>> graphVertices = vertices();
+		int numVertices = 0;
+		while(graphVertices.hasNext()){
+		    graphVertices.next();
+		    numVertices ++;
+        }
+
+		return numVertices;
 	}
 
     // Do not change this method!
