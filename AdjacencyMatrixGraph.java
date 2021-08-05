@@ -139,7 +139,7 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
         //System.out.println(_unique_indices.get(0));
         CS16Vertex<V> insertableVertex = new GraphVertex<V>(vertElement);
         insertableVertex.setVertexNumber(unique_index);
-        System.out.println(insertableVertex.getVertexNumber());
+        //System.out.println(insertableVertex.getVertexNumber());
         _vertices.add(insertableVertex);
         _numVertices += 1;
         return insertableVertex;

@@ -58,9 +58,6 @@ public class MyPrimJarnik<V> implements MinSpanForest<V> {
         //System.out.println(firstVertex.getVertexName());
         while(vertices.hasNext()){
             CS16Vertex<V> nextVertex = vertices.next();
-            if(nextVertex == null){
-                System.out.println("true");
-            }
             _vertexCost.setDecoration(nextVertex, Integer.MAX_VALUE);
             _inPriorityQueue.setDecoration(nextVertex, true);
             _previousVertex.setDecoration(nextVertex, null);
