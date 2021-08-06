@@ -61,31 +61,35 @@ public class MyPageRank<V> implements PageRank<V> {
 		_graphSinks = new ArrayList<>();
 		_numOutgoingEdges = new ArrayList<>();
 
-
-		int numVertices = g.getNumVertices();
 		Iterator<CS16Vertex<V>> graphVertices = g.vertices();
 		while(graphVertices.hasNext()){
 			CS16Vertex<V> next = graphVertices.next();
 			_vertices.add(next);
-			_currentPageRank.add(1.0/numVertices);
-			_numOutgoingEdges.add(g.numOutgoingEdges(next));
-			if(g.numOutgoingEdges(next) == 0){
+
+			int vertexOutgoingEdges = g.numOutgoingEdges(next);
+			_numOutgoingEdges.add(vertexOutgoingEdges);
+			if(vertexOutgoingEdges == 0){
 				_graphSinks.add(next);
 			}
+
+			double dividedRank = 1.0 / g.getNumVertices();
+			_currentPageRank.add(dividedRank);
 		}
 
+		int numVertices = _vertices.size();
+
 		do{
-			for(int i= 0; i < _vertices.size(); i++){
+			for(int i= 0; i < numVertices; i++){
 				_previousPageRank.add(i, _currentPageRank.get(i));
 			}
-			this.handleSinks();
-			for(int i = 0; i < _vertices.size(); i++){
-				double updatedRank = this.updatePageRank(_vertices.get(i));
+			this.handleSinks(numVertices);
+			for(int i = 0; i < numVertices; i++){
+				double updatedRank = this.rankUpdater(_vertices.get(i), numVertices);
 				_currentPageRank.set(i, updatedRank);
 				_vertsToRanks.put(_vertices.get(i), updatedRank);
 			}
 			_numRounds ++;
-		} while(!checkForStoppage());
+		} while(!checkForStoppage(numVertices));
 
 		return _vertsToRanks;
 	}
@@ -95,22 +99,22 @@ public class MyPageRank<V> implements PageRank<V> {
 	 * edges). There are multiple ways you can implement this, check
 	 * the lecture and help slides!
 	 */
-	private void handleSinks() {
-		double rankSum = 0;
-		for (int i = 0; i < _vertices.size(); i++){
+	private void handleSinks(int numVertices) {
+		double sinkSum = 0;
+		for (int i = 0; i < numVertices; i++){
+			double previousRank = _previousPageRank.get(i);
 			if(_numOutgoingEdges.get(i) == 0){
-				rankSum += _previousPageRank.get(i) / _g.getNumVertices();
+				sinkSum += previousRank / numVertices;
 			}
 		}
-		for(int i = 0; i < _vertices.size(); i++){
-			_currentPageRank.set(i, rankSum);
+		for(int i = 0; i < numVertices; i++){
+			_currentPageRank.set(i, sinkSum);
 		}
 	}
 
-	//makeCheckStoppage method
-	private boolean checkForStoppage(){
-		for (int i = 0; i < _vertices.size(); i++){
-			if(Math.abs(_currentPageRank.get(i) - _previousPageRank.get(i)) > _error || _numRounds > _maxIterations){
+	private boolean checkForStoppage(int numVertices){
+		for (int i = 0; i < numVertices; i++){
+			if(_numRounds > _maxIterations || Math.abs(_currentPageRank.get(i) - _previousPageRank.get(i)) > _error){
 				return false;
 			}
 		}
@@ -118,18 +122,29 @@ public class MyPageRank<V> implements PageRank<V> {
 		return true;
 	}
 
-	private double updatePageRank(CS16Vertex<V> vertex){
+	private double rankUpdater(CS16Vertex<V> vertex, int numVertices){
 		Iterator<CS16Edge<V>> incomingEdges = _g.incomingEdges(vertex);
+
 		while(incomingEdges.hasNext()){
 			CS16Edge<V> edge = incomingEdges.next();
 			CS16Vertex<V> oppositeVertex = _g.opposite(vertex, edge);
-			_currentPageRank.set(_vertices.indexOf(vertex), _currentPageRank.get(_vertices.indexOf(vertex)) +
-					_previousPageRank.get(_vertices.indexOf(oppositeVertex))/_numOutgoingEdges.get(_vertices.indexOf(oppositeVertex)));
+			this.rankUpdaterHelper(vertex, oppositeVertex);
 		}
 
-		double updatedRank = ((1-_dampingFactor) / _g.getNumVertices()) +
-				(_dampingFactor * _currentPageRank.get(_vertices.indexOf(vertex)));
+		double dampingDiluted = (1-_dampingFactor) / (numVertices);
+		double currentPageRank = _currentPageRank.get(_vertices.indexOf(vertex));
+		double dampingAccounted = (_dampingFactor * currentPageRank);
+		double updatedRank = dampingDiluted + dampingAccounted;
 		return updatedRank;
+	}
+
+	private void rankUpdaterHelper(CS16Vertex<V> vertex, CS16Vertex<V> oppositeVertex){
+		double currentRank = _currentPageRank.get(_vertices.indexOf(vertex));
+		double oppositeIndex = _previousPageRank.get(_vertices.indexOf(oppositeVertex));
+		double previousOutgoingEdges = _numOutgoingEdges.get(_vertices.indexOf(oppositeVertex));
+		double previousRankDiluted = oppositeIndex/previousOutgoingEdges;
+		double rankMath = currentRank + previousRankDiluted;
+		_currentPageRank.set(_vertices.indexOf(vertex), rankMath);
 	}
 
 }
