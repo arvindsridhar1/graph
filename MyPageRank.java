@@ -85,18 +85,21 @@ public class MyPageRank<V> implements PageRank<V> {
 		return _vertsToRanks;
 	}
 
-	/**
-	 * Method used to account for sink pages (those with no outgoing
-	 * edges). There are multiple ways you can implement this, check
-	 * the lecture and help slides!
-	 */
 
+	/**
+	 * Method used to move the current page rank of a vertex to its previous page rank
+	 */
 	private void currIntoPrev(int numVertices){
 		for(int i= 0; i < numVertices; i++){
 			_previousPageRank.add(i, _currentPageRank.get(i));
 		}
 	}
 
+	/**
+	 * Method used to account for sink pages (those with no outgoing
+	 * edges). There are multiple ways you can implement this, check
+	 * the lecture and help slides!
+	 */
 
 	private void handleSinks(int numVertices) {
 		double sinkSum = 0;
@@ -111,6 +114,9 @@ public class MyPageRank<V> implements PageRank<V> {
 		}
 	}
 
+	/**
+	 * Checks whether either of the stopping conditions have been met for the algorithm to stop running
+	 */
 	private boolean checkForStoppage(int numVertices){
 		for (int i = 0; i < numVertices; i++){
 			if(_numRounds > _maxIterations || Math.abs(_currentPageRank.get(i) - _previousPageRank.get(i)) > _error){
@@ -121,6 +127,9 @@ public class MyPageRank<V> implements PageRank<V> {
 		return true;
 	}
 
+	/**
+	 * Updates the current rank of each vertex based on its opposite vertices
+	 */
 	private void rankUpdater(int numVertices){
 		for(int i = 0; i < numVertices; i++) {
 			CS16Vertex<V> vertex = _vertices.get(i);
@@ -140,6 +149,9 @@ public class MyPageRank<V> implements PageRank<V> {
 		}
 	}
 
+	/**
+	 * Handles the majority of the mathematical calculation of updated current PageRank
+	 */
 	private void rankUpdaterHelper(CS16Vertex<V> vertex, CS16Vertex<V> oppositeVertex){
 		double currentRank = _currentPageRank.get(_vertices.indexOf(vertex));
 		double oppositeIndex = _previousPageRank.get(_vertices.indexOf(oppositeVertex));
