@@ -32,6 +32,7 @@ public class MyPageRank<V> implements PageRank<V> {
 	private List<Integer> _numOutgoingEdges;
 	private List<Double> _previousPageRank;
 	private List<Double> _currentPageRank;
+	private double _numRounds = 0;
  	private static final double _dampingFactor = 0.85;
 	private static final int _maxIterations = 100;
 	private static final double _error = 0.01;
@@ -60,6 +61,7 @@ public class MyPageRank<V> implements PageRank<V> {
 		_graphSinks = new ArrayList<>();
 		_numOutgoingEdges = new ArrayList<>();
 
+
 		int numVertices = g.getNumVertices();
 		Iterator<CS16Vertex<V>> graphVertices = g.vertices();
 		while(graphVertices.hasNext()){
@@ -72,7 +74,6 @@ public class MyPageRank<V> implements PageRank<V> {
 			}
 		}
 
-		int numRounds = 0;
 		do{
 			for(int i= 0; i < _vertices.size(); i++){
 				_previousPageRank.add(i, _currentPageRank.get(i));
@@ -83,8 +84,8 @@ public class MyPageRank<V> implements PageRank<V> {
 				_currentPageRank.set(i, updatedRank);
 				_vertsToRanks.put(_vertices.get(i), updatedRank);
 			}
-			numRounds ++;
-		} while(numRounds <= _maxIterations && !checkForErrors());
+			_numRounds ++;
+		} while(!checkForStoppage());
 
 		return _vertsToRanks;
 	}
@@ -106,12 +107,14 @@ public class MyPageRank<V> implements PageRank<V> {
 		}
 	}
 
-	private boolean checkForErrors(){
+	//makeCheckStoppage method
+	private boolean checkForStoppage(){
 		for (int i = 0; i < _vertices.size(); i++){
-			if(Math.abs(_currentPageRank.get(i) - _previousPageRank.get(i)) > _error){
+			if(Math.abs(_currentPageRank.get(i) - _previousPageRank.get(i)) > _error || _numRounds > _maxIterations){
 				return false;
 			}
 		}
+		_numRounds ++;
 		return true;
 	}
 
@@ -123,9 +126,10 @@ public class MyPageRank<V> implements PageRank<V> {
 			_currentPageRank.set(_vertices.indexOf(vertex), _currentPageRank.get(_vertices.indexOf(vertex)) +
 					_previousPageRank.get(_vertices.indexOf(oppositeVertex))/_numOutgoingEdges.get(_vertices.indexOf(oppositeVertex)));
 		}
-		return ((1-_dampingFactor) / _g.getNumVertices()) + (_dampingFactor * _currentPageRank.get(_vertices.indexOf(vertex)));
+
+		double updatedRank = ((1-_dampingFactor) / _g.getNumVertices()) +
+				(_dampingFactor * _currentPageRank.get(_vertices.indexOf(vertex)));
+		return updatedRank;
 	}
-
-
 
 }
