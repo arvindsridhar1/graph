@@ -75,7 +75,7 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
     /**
      * Fills an arrayList of size MAX_VERTICES with unique indices
      */
-    public void fillUniqueIndices(){
+    private void fillUniqueIndices(){
         for(int i = 0; i < MAX_VERTICES; i++){
             _unique_indices.add(i);
         }
