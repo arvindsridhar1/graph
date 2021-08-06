@@ -466,6 +466,73 @@ public class GraphTest {
         assertThat(_dirGraph.numOutgoingEdges(B), is(2));
     }
 
+    @Test(timeout = 10000)
+    public void testOpposite() {
+        // insert vertices
+        CS16Vertex<String> A = _graph.insertVertex("A");
+        CS16Vertex<String> B = _graph.insertVertex("B");
+        CS16Vertex<String> C = _graph.insertVertex("C");
+        CS16Edge<String> ab = _graph.insertEdge(A, B, 1);
+        CS16Edge<String> bc = _graph.insertEdge(B, C, 1);
+
+        assertThat(_graph.opposite(A, ab), is(B));
+        assertThat(_graph.opposite(B, ab), is(A));
+        assertThat(_graph.opposite(B, bc), is(C));
+        assertThat(_graph.opposite(C, bc), is(B));
+    }
+
+    @Test(timeout = 10000)
+    public void testEndVertices() {
+        // insert vertices
+        CS16Vertex<String> A = _graph.insertVertex("A");
+        CS16Vertex<String> B = _graph.insertVertex("B");
+        CS16Vertex<String> C = _graph.insertVertex("C");
+        CS16Edge<String> ab = _graph.insertEdge(A, B, 1);
+
+        assertThat(_graph.endVertices(ab).contains(A), is(true));
+        assertThat(_graph.endVertices(ab).contains(B), is(true));
+        assertThat(_graph.endVertices(ab).contains(C), is(false));
+    }
+
+    @Test(timeout = 10000)
+    public void testClear() {
+        // insert vertices
+        CS16Vertex<String> A = _graph.insertVertex("A");
+        CS16Vertex<String> B = _graph.insertVertex("B");
+        CS16Vertex<String> C = _graph.insertVertex("C");
+        CS16Edge<String> ab = _graph.insertEdge(A, B, 1);
+
+        _graph.clear();
+
+        List<CS16Edge<String>> edges = new ArrayList<CS16Edge<String>>();
+        Iterator<CS16Edge<String>> edgeIterator = _graph.edges();
+        while(edgeIterator.hasNext()){
+            edges.add(edgeIterator.next());
+        }
+
+        assertThat(_graph.getNumVertices() == 0, is(true));
+        assertThat(edges.size() == 0, is(true));
+    }
+
+    @Test(timeout = 10000)
+    public void numVerticesTest() {
+        // insert vertices
+        CS16Vertex<String> A = _graph.insertVertex("A");
+        CS16Vertex<String> B = _graph.insertVertex("B");
+        CS16Vertex<String> C = _graph.insertVertex("C");
+        CS16Vertex<String> D = _graph.insertVertex("D");
+        CS16Vertex<String> E = _graph.insertVertex("E");
+
+        assertThat(_graph.getNumVertices() == 5, is(true));
+    }
+
+
+
+
+
+
+
+
 
 
 
