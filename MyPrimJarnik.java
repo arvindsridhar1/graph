@@ -61,11 +61,15 @@ public class MyPrimJarnik<V> implements MinSpanForest<V> {
             _previousVertex.setDecoration(nextVertex, null);
         }
 
+        Collection<CS16Edge<V>> MST = new ArrayList<CS16Edge<V>>();
+
         Iterator<CS16Vertex<V>> verticesCopy = g.vertices();
+        //edge case where graph is empty
+        if(!verticesCopy.hasNext()){
+            return MST;
+        }
         CS16Vertex<V> firstVertex = verticesCopy.next();
         _vertexCost.setDecoration(firstVertex, 0);
-
-        Collection<CS16Edge<V>> MST = new ArrayList<CS16Edge<V>>();
 
         CS16AdaptableHeapPriorityQueue<Integer, CS16Vertex<V>> PQ = new CS16AdaptableHeapPriorityQueue<Integer, CS16Vertex<V>>();
 

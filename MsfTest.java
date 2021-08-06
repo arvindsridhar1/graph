@@ -60,8 +60,82 @@ public class MsfTest {
         assertThat(MSF.contains(bc), is(true));
         assertThat(MSF.contains(ca), is(false));
     }
+
+    @Test
+    public void emptyGraphTest() {
+        Collection<CS16Edge<String>> MSF = _msf.genMinSpanForest(_graph, null);
+        assertThat(MSF.size(), is(0));
+    }
+
+
+    @Test
+    public void oneVertexTest() {
+        CS16Vertex<String> A = _graph.insertVertex("A");
+
+        Collection<CS16Edge<String>> MSF = _msf.genMinSpanForest(_graph, null);
+        assertThat(MSF.size(), is(0));
+    }
+
+    @Test
+    public void oneEdgeTest() {
+        CS16Vertex<String> A = _graph.insertVertex("A");
+        CS16Vertex<String> B = _graph.insertVertex("B");
+        CS16Edge<String> ab = _graph.insertEdge(A, B, 1);
+
+        Collection<CS16Edge<String>> MSF = _msf.genMinSpanForest(_graph, null);
+        assertThat(MSF.size(), is(1));
+    }
+
+    @Test
+    public void twoSeparateTrees() {
+        CS16Vertex<String> A = _graph.insertVertex("A");
+        CS16Vertex<String> B = _graph.insertVertex("B");
+        CS16Vertex<String> C = _graph.insertVertex("C");
+
+        CS16Edge<String> ab = _graph.insertEdge(A, B, 21);
+        CS16Edge<String> bc = _graph.insertEdge(B, C, 22);
+        CS16Edge<String> ca = _graph.insertEdge(A, C, 23);
+
+        CS16Vertex<String> X = _graph.insertVertex("X");
+        CS16Vertex<String> Y = _graph.insertVertex("Y");
+        CS16Vertex<String> Z = _graph.insertVertex("Z");
+
+        CS16Edge<String> xy = _graph.insertEdge(X, Y, 10);
+        CS16Edge<String> yz = _graph.insertEdge(Y, Z, 11);
+        CS16Edge<String> xz = _graph.insertEdge(X, Z, 12);
+
+        Collection<CS16Edge<String>> MSF = _msf.genMinSpanForest(_graph, null);
+
+        assertThat(MSF.size(), is(4));
+        assertThat(MSF.contains(ab), is(true));
+        assertThat(MSF.contains(bc), is(true));
+        assertThat(MSF.contains(ca), is(false));
+
+        assertThat(MSF.contains(xy), is(true));
+        assertThat(MSF.contains(yz), is(true));
+        assertThat(MSF.contains(xz), is(false));
+    }
+
+    @Test
+    public void multipleValidPathsTest() {
+        CS16Vertex<String> A = _graph.insertVertex("A");
+        CS16Vertex<String> B = _graph.insertVertex("B");
+        CS16Vertex<String> C = _graph.insertVertex("C");
+
+        CS16Edge<String> ab = _graph.insertEdge(A, B, 2);
+        CS16Edge<String> bc = _graph.insertEdge(B, C, 2);
+        CS16Edge<String> ac = _graph.insertEdge(A, C, 2);
+
+        Collection<CS16Edge<String>> MSF = _msf.genMinSpanForest(_graph, null);
+
+        assertThat(MSF.size(), is(2));
+        assertThat((MSF.contains(ab) && MSF.contains(ac)) || (MSF.contains(ab) && MSF.contains(bc)) ||
+                (MSF.contains(ac) && MSF.contains(ab)), is(true));
+    }
     
-    
+
+
+
     /*
      * This is the method that, using junit magic, provides the list of MSF algorithms
      * that should be created and be tested via the methods above.
