@@ -113,6 +113,9 @@ public class MyPageRankTest {
 
 	}
 
+	/**
+	 * Tests PageRank on an empty graph
+	 */
 	@Test
 	public void emptyTest() {
 		Graph<String> adjMatrix = new AdjacencyMatrixGraph<String>(true);
@@ -121,6 +124,9 @@ public class MyPageRankTest {
 		assertEquals(output.size(), 0);
 	}
 
+	/**
+	 * Tests PageRank on an graph with just one vertex
+	 */
 	@Test
 	public void oneNodeTest() {
 		Graph<String> adjMatrix = new AdjacencyMatrixGraph<String>(true);
@@ -131,6 +137,9 @@ public class MyPageRankTest {
 		assertEquals(1, output.get(a), _epsilon);
 	}
 
+	/**
+	 * Tests PageRank on an graph with just one edge
+	 */
 	@Test
 	public void twoNodeTest() {
 		Graph<String> adjMatrix = new AdjacencyMatrixGraph<String>(true);
@@ -144,6 +153,9 @@ public class MyPageRankTest {
 		assertEquals(0.33, output.get(a), _epsilon);
 	}
 
+	/**
+	 * Tests PageRank on a graph with two disconnected trees
+	 */
 	@Test
 	public void twoTrees() {
 		Graph<String> adjMatrix = new AdjacencyMatrixGraph<String>(true);
@@ -176,6 +188,9 @@ public class MyPageRankTest {
 		assertEquals(total, 1, _epsilon);
 	}
 
+	/**
+	 * Tests PageRank on graph with multiple vertices that have only incoming edges
+	 */
 	@Test
 	public void lotsOfSinks() {
 		Graph<String> adjMatrix = new AdjacencyMatrixGraph<String>(true);
@@ -208,15 +223,4 @@ public class MyPageRankTest {
 		}
 		assertEquals(total, 1, _epsilon);
 	}
-
-
-
-
-	/**
-	  * TODO: Add your own tests here. Instead of checking for specific rank values,
-	  * make test cases comparing the relative ranks of pages (e.g. using an assertThat statement)!
-	  */
-
-
-
 }
