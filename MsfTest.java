@@ -43,7 +43,10 @@ public class MsfTest {
     private String _msfClassName;
     private MinSpanForest<String> _msf;
     private Graph<String> _graph;
-    
+
+    /**
+     * Tests Prim-Jarnik's basic functionality on a standard simple graph
+     */
     @Test
     public void simpleTest() {
         CS16Vertex<String> A = _graph.insertVertex("A");
@@ -61,13 +64,18 @@ public class MsfTest {
         assertThat(MSF.contains(ca), is(false));
     }
 
+    /**
+     * Tests Prim-Jarnik on an empty graph
+     */
     @Test
     public void emptyGraphTest() {
         Collection<CS16Edge<String>> MSF = _msf.genMinSpanForest(_graph, null);
         assertThat(MSF.size(), is(0));
     }
 
-
+    /**
+     * Tests Prim-Jarnik on graph with just one vertex
+     */
     @Test
     public void oneVertexTest() {
         CS16Vertex<String> A = _graph.insertVertex("A");
@@ -75,6 +83,9 @@ public class MsfTest {
         assertThat(MSF.size(), is(0));
     }
 
+    /**
+     * Tests Prim-Jarnik on a graph with just one edge
+     */
     @Test
     public void oneEdgeTest() {
         CS16Vertex<String> A = _graph.insertVertex("A");
@@ -85,6 +96,9 @@ public class MsfTest {
         assertThat(MSF.size(), is(1));
     }
 
+    /**
+     * Tests Prim-Jarnik on a graph with two disconnected trees
+     */
     @Test
     public void twoSeparateTrees() {
         CS16Vertex<String> A = _graph.insertVertex("A");
@@ -115,6 +129,9 @@ public class MsfTest {
         assertThat(MSF.contains(xz), is(false));
     }
 
+    /**
+     * Tests Prim-Jarnik on a graph where there are multiple valid MSFs
+     */
     @Test
     public void multipleValidPathsTest() {
         CS16Vertex<String> A = _graph.insertVertex("A");
