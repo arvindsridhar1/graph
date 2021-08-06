@@ -73,7 +73,7 @@ Conceptual Question:
         on said whitelist (ex. official university sites, governmental organizations, etc.)
 
         - My solution algorithm would create outgoing edges from each individual blacklisted site to every whitelisted
-        site! This would have the following benefits:
+        site, and would also gradually remove incoming edges to blacklisted sites! This would have the following benefits:
 
             -Blacklisted sites are prevented from becoming sinks, and thereby lose a certain amount of PageRank that
             they would have had otherwise. They would also have multiple outgoing edges going to different nodes,
