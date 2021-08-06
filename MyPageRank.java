@@ -1,13 +1,6 @@
 package graph;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 import support.graph.CS16Edge;
 import support.graph.CS16Vertex;
@@ -29,7 +22,7 @@ public class MyPageRank<V> implements PageRank<V> {
 	private List<CS16Vertex<V>> _vertices;
 	private Map<CS16Vertex<V>, Double> _vertsToRanks;
 	private List<CS16Vertex<V>> _graphSinks;
-	private List<Integer> _numOutgoingEdges;
+	private List<Integer> _outgoingEdges;
 	private List<Double> _previousPageRank;
 	private List<Double> _currentPageRank;
 	private double _numRounds = 0;
@@ -59,7 +52,7 @@ public class MyPageRank<V> implements PageRank<V> {
 		_previousPageRank = new ArrayList<>();
 		_currentPageRank = new ArrayList<>();
 		_graphSinks = new ArrayList<>();
-		_numOutgoingEdges = new ArrayList<>();
+		_outgoingEdges = new ArrayList<>();
 
 		Iterator<CS16Vertex<V>> graphVertices = g.vertices();
 		while(graphVertices.hasNext()){
@@ -67,7 +60,7 @@ public class MyPageRank<V> implements PageRank<V> {
 			_vertices.add(next);
 
 			int vertexOutgoingEdges = g.numOutgoingEdges(next);
-			_numOutgoingEdges.add(vertexOutgoingEdges);
+			_outgoingEdges.add(vertexOutgoingEdges);
 			if(vertexOutgoingEdges == 0){
 				_graphSinks.add(next);
 			}
@@ -79,17 +72,15 @@ public class MyPageRank<V> implements PageRank<V> {
 		int numVertices = _vertices.size();
 
 		do{
-			for(int i= 0; i < numVertices; i++){
-				_previousPageRank.add(i, _currentPageRank.get(i));
-			}
+			this.currIntoPrev(numVertices);
 			this.handleSinks(numVertices);
-			for(int i = 0; i < numVertices; i++){
-				double updatedRank = this.rankUpdater(_vertices.get(i), numVertices);
-				_currentPageRank.set(i, updatedRank);
-				_vertsToRanks.put(_vertices.get(i), updatedRank);
-			}
+			this.rankUpdater(numVertices);
 			_numRounds ++;
 		} while(!checkForStoppage(numVertices));
+
+		for(int i = 0; i < numVertices; i++){
+			_vertsToRanks.put(_vertices.get(i), _currentPageRank.get(i));
+		}
 
 		return _vertsToRanks;
 	}
@@ -99,11 +90,19 @@ public class MyPageRank<V> implements PageRank<V> {
 	 * edges). There are multiple ways you can implement this, check
 	 * the lecture and help slides!
 	 */
+
+	private void currIntoPrev(int numVertices){
+		for(int i= 0; i < numVertices; i++){
+			_previousPageRank.add(i, _currentPageRank.get(i));
+		}
+	}
+
+
 	private void handleSinks(int numVertices) {
 		double sinkSum = 0;
 		for (int i = 0; i < numVertices; i++){
 			double previousRank = _previousPageRank.get(i);
-			if(_numOutgoingEdges.get(i) == 0){
+			if(_outgoingEdges.get(i) == 0){
 				sinkSum += previousRank / numVertices;
 			}
 		}
@@ -122,26 +121,29 @@ public class MyPageRank<V> implements PageRank<V> {
 		return true;
 	}
 
-	private double rankUpdater(CS16Vertex<V> vertex, int numVertices){
-		Iterator<CS16Edge<V>> incomingEdges = _g.incomingEdges(vertex);
+	private void rankUpdater(int numVertices){
+		for(int i = 0; i < numVertices; i++) {
+			CS16Vertex<V> vertex = _vertices.get(i);
+			Iterator<CS16Edge<V>> incomingEdges = _g.incomingEdges(vertex);
 
-		while(incomingEdges.hasNext()){
-			CS16Edge<V> edge = incomingEdges.next();
-			CS16Vertex<V> oppositeVertex = _g.opposite(vertex, edge);
-			this.rankUpdaterHelper(vertex, oppositeVertex);
+			while(incomingEdges.hasNext()){
+				CS16Edge<V> edge = incomingEdges.next();
+				CS16Vertex<V> oppositeVertex = _g.opposite(vertex, edge);
+				this.rankUpdaterHelper(vertex, oppositeVertex);
+			}
+
+			double dampingDiluted = (1-_dampingFactor) / (numVertices);
+			double currentPageRank = _currentPageRank.get(_vertices.indexOf(vertex));
+			double dampingAccounted = (_dampingFactor * currentPageRank);
+			double updatedRank = dampingDiluted + dampingAccounted;
+			_currentPageRank.set(i, updatedRank);
 		}
-
-		double dampingDiluted = (1-_dampingFactor) / (numVertices);
-		double currentPageRank = _currentPageRank.get(_vertices.indexOf(vertex));
-		double dampingAccounted = (_dampingFactor * currentPageRank);
-		double updatedRank = dampingDiluted + dampingAccounted;
-		return updatedRank;
 	}
 
 	private void rankUpdaterHelper(CS16Vertex<V> vertex, CS16Vertex<V> oppositeVertex){
 		double currentRank = _currentPageRank.get(_vertices.indexOf(vertex));
 		double oppositeIndex = _previousPageRank.get(_vertices.indexOf(oppositeVertex));
-		double previousOutgoingEdges = _numOutgoingEdges.get(_vertices.indexOf(oppositeVertex));
+		double previousOutgoingEdges = _outgoingEdges.get(_vertices.indexOf(oppositeVertex));
 		double previousRankDiluted = oppositeIndex/previousOutgoingEdges;
 		double rankMath = currentRank + previousRankDiluted;
 		_currentPageRank.set(_vertices.indexOf(vertex), rankMath);

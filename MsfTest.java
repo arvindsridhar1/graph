@@ -71,7 +71,6 @@ public class MsfTest {
     @Test
     public void oneVertexTest() {
         CS16Vertex<String> A = _graph.insertVertex("A");
-
         Collection<CS16Edge<String>> MSF = _msf.genMinSpanForest(_graph, null);
         assertThat(MSF.size(), is(0));
     }
