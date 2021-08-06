@@ -214,7 +214,7 @@ public class GraphTest {
         _graph.numOutgoingEdges(null);
     }
 
-    /**
+
     @Test(expected = DirectionException.class)
     public void numOutgoingEdgesDirectionExceptionTest(){
         CS16Vertex<String> A = _graph.insertVertex("A");
@@ -222,7 +222,7 @@ public class GraphTest {
         CS16Edge<String> ab = _graph.insertEdge(A, B, 1);
         _graph.numOutgoingEdges(A);
     }
-     */
+
 
     @Test(expected = InvalidVertexException.class)
     public void oppositeVertException(){
@@ -463,7 +463,6 @@ public class GraphTest {
         assertThat(edges.contains(be), is(true));
         assertThat(edges.contains(ac), is(false));
         assertThat(edges.contains(de), is(false));
-        //System.out.println(_dirGraph.numOutgoingEdges(B));
         assertThat(_dirGraph.numOutgoingEdges(B), is(2));
     }
 
