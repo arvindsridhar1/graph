@@ -1,0 +1,92 @@
+README Graph
+
+Design Choices:
+
+    -Types of Decorations I used:
+
+        -_vertexCost: This was a decorator in which I paired a vertex and an integer to keep track of the cost of
+            visiting a vertex when constructing a Minimum Spanning Tree
+        -_previousVertex: This was a decorator in which I paired a vertex an another vertex, and this decorator kept
+            track of what a vertex's previous vertex was in a minimum spanning tree (the node visited directly before it)
+        -_vertexEntry: This was a decorator in which I paired a vertex and an <Integer, Vertex> Entry, with the purpose
+            of this decorator being to keep track of which entry a vertex was located at in the priority queue
+        -_inPriorityQueue: This was a decorator in which I paired a vertex and a boolean, specifically to reference
+            whether a vertex had been visited and added to a minimum spanning tree/removed from the queue already
+
+    - Created an ArrayList in PageRank to keep track of the sinks of a graph called _graphSinks
+
+    - Created helper methods for the mathematical calculation of updating a vertex's PageRank
+
+    - Checked for ending conditions of PageRank in one helper method
+
+    - Handled sinks by distributing the sum of sink PageRanks over the overall number of vertices
+
+    - Created a _unique_indices ArrayList that I popped from to ensure that vertices always had a unique index
+        on the graph
+
+Known Bugs:
+
+    - None!
+
+Handin:
+
+    - This is my final handin
+
+Test Case Explanations:
+
+    -GraphTest:
+        Exception Tests: This was a large category of tests in which I checked whether exceptions were properly thrown
+            in cases where there were null vertices, null edges, non-existing edges/vertices, or the wrong type of graph
+        Tested the following methods strictly for functionality in a valid graph:
+            -removeVertex()
+            -areAdjacent() - Both Directed and Undirected
+            -connectingEdge()
+            -incomingEdges() - Both Directed and Undirected
+            -outgoingEdges() - Both Directed and Undirected
+            -opposite()
+            -endVertices()
+            -clear()
+            -getNumVertices()
+
+    -MyPageRankTest:
+        -emptyTest() - Tests PageRank on an empty graph
+        -oneNodeTest() - Tests PageRank on an graph with just one vertex
+        -twoNodeTest() - Tests PageRank on an graph with just one edge
+        -twoTrees() - Tests PageRank on a graph with two disconnected trees
+        -lotsOfSinks() - Tests PageRank on graph with multiple vertices that have only incoming edges
+
+    -MsfTest:
+        -emptyGraphTest() - Tests Prim-Jarnik on an empty graph
+        -oneVertexTest() - Tests Prim-Jarnik on graph with just one vertex
+        -oneEdgeTest() - Tests Prim-Jarnik on a graph with just one edge
+        -twoSeparateTrees() - Tests Prim-Jarnik on a graph with two disconnected trees
+        -multipleValidPathsTest() - Tests Prim-Jarnik on a graph where there are multiple valid MSFs
+
+Conceptual Question:
+
+    - In order to alter the search results to prevent the spread of false information for certain blacklisted sites, I
+    propose the following algorithm:
+
+        - Let us say there exists a list of blacklisted sites on a certain topic. For this proposed algorithm, let us
+        also construct a "whitelist" of a few, scientifically-accredited sites that provide valuable information on the
+        topic. This would not be particularly difficult, as there are a few types of sites that would qualify for being
+        on said whitelist (ex. official university sites, governmental organizations, etc.)
+
+        - My solution algorithm would create outgoing edges from each individual blacklisted site to every whitelisted
+        site! This would have the following benefits:
+
+            -Blacklisted sites are prevented from becoming sinks, and thereby lose a certain amount of PageRank that
+            they would have had otherwise. They would also have multiple outgoing edges going to different nodes,
+            significantly decreasing their PageRank.
+
+            -Whitelisted sites are given a bonus for provided verified, accredited information, and this PageRank bonus
+            does not come from ambiguous sites but instead directly from sites that contain false information, keeping
+            the PageRank at a total of 1, while simultaneously rewarding correct information and punishing false
+            information
+
+            -Finally, this gives us the ability to manually ensure that a blacklisted page is never listed above a
+            whitelisted page (this algorithm could include a checking method that makes sure all whitelisted sites are
+            ranked above blacklisted sites, and if not, switches their PageRanks) - doing this would ensure that
+            the blacklisted sites are not censored or removed, because that would be ethically inconsiderate, but
+            ensures that they are much more difficult to find for those looking for reliable information on the topic.
+
