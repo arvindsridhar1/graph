@@ -28,7 +28,11 @@ public class MyPageRank<V> implements PageRank<V> {
 	private Graph<V> _g;
 	private List<CS16Vertex<V>> _vertices;
 	private Map<CS16Vertex<V>, Double> _vertsToRanks;
-	private static final double _dampingFactor = 0.85;
+	private List<CS16Vertex<V>> _graphSinks;
+	private List<Integer> _numOutgoingEdges;
+	private List<Double> _previousPageRank;
+	private List<Double> _currentPageRank;
+ 	private static final double _dampingFactor = 0.85;
 	private static final int _maxIterations = 100;
 	private static final double _error = 0.01;
 
@@ -48,8 +52,41 @@ public class MyPageRank<V> implements PageRank<V> {
 	 */
 	@Override
 	public Map<CS16Vertex<V>, Double> calcPageRank(Graph<V> g) {
-		// TODO: initialize private instance variables
-		return null;
+		_g = g;
+		_vertices = new ArrayList<>();
+		_vertsToRanks = new HashMap<>();
+		_previousPageRank = new ArrayList<>();
+		_currentPageRank = new ArrayList<>();
+		_graphSinks = new ArrayList<>();
+		_numOutgoingEdges = new ArrayList<>();
+
+		int numVertices = g.getNumVertices();
+		Iterator<CS16Vertex<V>> graphVertices = g.vertices();
+		while(graphVertices.hasNext()){
+			CS16Vertex<V> next = graphVertices.next();
+			_vertices.add(next);
+			_currentPageRank.add(1.0/numVertices);
+			_numOutgoingEdges.add(g.numOutgoingEdges(next));
+			if(g.numOutgoingEdges(next) == 0){
+				_graphSinks.add(next);
+			}
+		}
+
+		int numRounds = 0;
+		do{
+			for(int i= 0; i < _vertices.size(); i++){
+				_previousPageRank.add(i, _currentPageRank.get(i));
+			}
+			this.handleSinks();
+			for(int i = 0; i < _vertices.size(); i++){
+				double updatedRank = this.updatePageRank(_vertices.get(i));
+				_currentPageRank.set(i, updatedRank);
+				_vertsToRanks.put(_vertices.get(i), updatedRank);
+			}
+			numRounds ++;
+		} while(numRounds <= _maxIterations && !checkForErrors());
+
+		return _vertsToRanks;
 	}
 
 	/**
@@ -58,9 +95,37 @@ public class MyPageRank<V> implements PageRank<V> {
 	 * the lecture and help slides!
 	 */
 	private void handleSinks() {
-		// TODO: Fill this in
+		double rankSum = 0;
+		for (int i = 0; i < _vertices.size(); i++){
+			if(_numOutgoingEdges.get(i) == 0){
+				rankSum += _previousPageRank.get(i) / _g.getNumVertices();
+			}
+		}
+		for(int i = 0; i < _vertices.size(); i++){
+			_currentPageRank.set(i, rankSum);
+		}
 	}
 
-	// Feel free to add helper methods below.
+	private boolean checkForErrors(){
+		for (int i = 0; i < _vertices.size(); i++){
+			if(Math.abs(_currentPageRank.get(i) - _previousPageRank.get(i)) > _error){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private double updatePageRank(CS16Vertex<V> vertex){
+		Iterator<CS16Edge<V>> incomingEdges = _g.incomingEdges(vertex);
+		while(incomingEdges.hasNext()){
+			CS16Edge<V> edge = incomingEdges.next();
+			CS16Vertex<V> oppositeVertex = _g.opposite(vertex, edge);
+			_currentPageRank.set(_vertices.indexOf(vertex), _currentPageRank.get(_vertices.indexOf(vertex)) +
+					_previousPageRank.get(_vertices.indexOf(oppositeVertex))/_numOutgoingEdges.get(_vertices.indexOf(oppositeVertex)));
+		}
+		return ((1-_dampingFactor) / _g.getNumVertices()) + (_dampingFactor * _currentPageRank.get(_vertices.indexOf(vertex)));
+	}
+
+
 
 }

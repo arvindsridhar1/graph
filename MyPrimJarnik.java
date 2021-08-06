@@ -54,8 +54,6 @@ public class MyPrimJarnik<V> implements MinSpanForest<V> {
         _inPriorityQueue = new MyDecorator<CS16Vertex<V>, Boolean>();
 
         Iterator<CS16Vertex<V>> vertices = g.vertices();
-        //Problem, it's not actually recognizing the vertices on the graph!
-        //System.out.println(firstVertex.getVertexName());
         while(vertices.hasNext()){
             CS16Vertex<V> nextVertex = vertices.next();
             _vertexCost.setDecoration(nextVertex, Integer.MAX_VALUE);

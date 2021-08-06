@@ -66,10 +66,7 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
         _vertices = new HashSet<CS16Vertex<V>>();
         _edges = new HashSet<CS16Edge<V>>();
         _numVertices = 0;
-        _directed = false;
-        if(directed == true){
-            this.toggleDirected();
-        }
+        _directed = directed;
         _unique_indices = new ArrayList<Integer>();
         this.fillUniqueIndices();
 
@@ -248,6 +245,9 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
      */
     @Override
     public Integer removeEdge(CS16Edge<V> edge) throws InvalidEdgeException {
+        if(edge == null){
+            throw new InvalidEdgeException("null edge");
+        }
         CS16Vertex<V> v1 = edge.getVertexOne();
         CS16Vertex<V> v2 = edge.getVertexTwo();
         _edges.remove(edge);
@@ -334,6 +334,7 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
             if(_adjMatrix[i][vert.getVertexNumber()] != null){
                 incomingEdges.add(_adjMatrix[i][vert.getVertexNumber()]);
             }
+            System.out.println(_directed);
             if(_directed = false){
                 if(_adjMatrix[vert.getVertexNumber()][i] != null){
                     incomingEdges.add(_adjMatrix[vert.getVertexNumber()][i]);
@@ -360,7 +361,6 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
         if(vert == null){
             throw new InvalidVertexException("null vertex");
         }
-
         ArrayList<CS16Edge<V>> outgoingEdges = new ArrayList<CS16Edge<V>>();
 
         for (int i = 0; i < _adjMatrix.length; i++){
@@ -523,7 +523,7 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
      */
     @Override
     public void toggleDirected() {
-        _directed = true;
+        _directed = !_directed;
     }
 
     /**
@@ -541,6 +541,9 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
         _vertices.clear();
         _edges.clear();
         _adjMatrix = makeEmptyEdgeArray();
+        _numVertices = 0;
+        _unique_indices = new ArrayList<Integer>();
+        this.fillUniqueIndices();
     }
 
     /**
