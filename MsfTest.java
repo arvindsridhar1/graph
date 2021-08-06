@@ -134,8 +134,6 @@ public class MsfTest {
     }
     
 
-
-
     /*
      * This is the method that, using junit magic, provides the list of MSF algorithms
      * that should be created and be tested via the methods above.

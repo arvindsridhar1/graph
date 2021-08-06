@@ -113,10 +113,110 @@ public class MyPageRankTest {
 
 	}
 
+	@Test
+	public void emptyTest() {
+		Graph<String> adjMatrix = new AdjacencyMatrixGraph<String>(true);
+		MyPageRank<String> pr = new MyPageRank<String>();
+		Map<CS16Vertex<String>, Double> output = pr.calcPageRank(adjMatrix);
+		assertEquals(output.size(), 0);
+	}
+
+	@Test
+	public void oneNodeTest() {
+		Graph<String> adjMatrix = new AdjacencyMatrixGraph<String>(true);
+		CS16Vertex<String> a = adjMatrix.insertVertex("A");
+		MyPageRank<String> pr = new MyPageRank<String>();
+		Map<CS16Vertex<String>, Double> output = pr.calcPageRank(adjMatrix);
+		assertEquals(output.size(), 1);
+		assertEquals(1, output.get(a), _epsilon);
+	}
+
+	@Test
+	public void twoNodeTest() {
+		Graph<String> adjMatrix = new AdjacencyMatrixGraph<String>(true);
+		CS16Vertex<String> a = adjMatrix.insertVertex("A");
+		CS16Vertex<String> b = adjMatrix.insertVertex("B");
+		CS16Edge<String> ab = adjMatrix.insertEdge(a,b,null);
+		MyPageRank<String> pr = new MyPageRank<String>();
+		Map<CS16Vertex<String>, Double> output = pr.calcPageRank(adjMatrix);
+		assertEquals(output.size(), 2);
+		assertEquals(0.66, output.get(b), _epsilon);
+		assertEquals(0.33, output.get(a), _epsilon);
+	}
+
+	@Test
+	public void twoTrees() {
+		Graph<String> adjMatrix = new AdjacencyMatrixGraph<String>(true);
+		CS16Vertex<String> a = adjMatrix.insertVertex("A");
+		CS16Vertex<String> b = adjMatrix.insertVertex("B");
+		CS16Vertex<String> c = adjMatrix.insertVertex("C");
+		CS16Vertex<String> d = adjMatrix.insertVertex("D");
+		CS16Vertex<String> e = adjMatrix.insertVertex("E");
+		CS16Vertex<String> f = adjMatrix.insertVertex("F");
+
+		CS16Edge<String> ab = adjMatrix.insertEdge(a,b,null);
+		CS16Edge<String> ad = adjMatrix.insertEdge(a,d,null);
+
+		CS16Edge<String> ec = adjMatrix.insertEdge(e,c,null);
+		CS16Edge<String> cf = adjMatrix.insertEdge(c,f,null);
+
+		MyPageRank<String> pr = new MyPageRank<String>();
+		Map<CS16Vertex<String>, Double> output = pr.calcPageRank(adjMatrix);
+		assertEquals(output.size(), 6);
+		assertTrue(output.get(f) > output.get(c));
+		assertTrue(output.get(c) > output.get(e));
+
+		assertEquals(output.get(b), output.get(d), _epsilon);
+		assertTrue(output.get(d) > output.get(a));
+
+		double total = 0;
+		for (double rank: output.values()) {
+			total += rank;
+		}
+		assertEquals(total, 1, _epsilon);
+	}
+
+	@Test
+	public void lotsOfSinks() {
+		Graph<String> adjMatrix = new AdjacencyMatrixGraph<String>(true);
+		CS16Vertex<String> a = adjMatrix.insertVertex("A");
+		CS16Vertex<String> b = adjMatrix.insertVertex("B");
+		CS16Vertex<String> c = adjMatrix.insertVertex("C");
+		CS16Vertex<String> d = adjMatrix.insertVertex("D");
+		CS16Vertex<String> e = adjMatrix.insertVertex("E");
+		CS16Vertex<String> f = adjMatrix.insertVertex("F");
+
+		CS16Edge<String> ab = adjMatrix.insertEdge(a,b,null);
+		CS16Edge<String> ac = adjMatrix.insertEdge(a,c,null);
+		CS16Edge<String> ad = adjMatrix.insertEdge(a,d,null);
+		CS16Edge<String> ec = adjMatrix.insertEdge(e,c,null);
+		CS16Edge<String> fb = adjMatrix.insertEdge(f,b,null);
+		CS16Edge<String> fc = adjMatrix.insertEdge(f,c,null);
+
+		MyPageRank<String> pr = new MyPageRank<String>();
+		Map<CS16Vertex<String>, Double> output = pr.calcPageRank(adjMatrix);
+		assertEquals(output.size(), 6);
+		assertTrue(output.get(c) > output.get(b));
+		assertTrue(output.get(b) > output.get(d));
+		assertTrue(output.get(d) > output.get(e));
+		assertEquals(output.get(f), output.get(e), _epsilon);
+		assertEquals(output.get(e), output.get(a), _epsilon);
+
+		double total = 0;
+		for (double rank: output.values()) {
+			total += rank;
+		}
+		assertEquals(total, 1, _epsilon);
+	}
+
+
+
 
 	/**
 	  * TODO: Add your own tests here. Instead of checking for specific rank values,
 	  * make test cases comparing the relative ranks of pages (e.g. using an assertThat statement)!
 	  */
+
+
 
 }
