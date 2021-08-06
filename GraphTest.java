@@ -79,7 +79,9 @@ public class GraphTest {
         assertThat(actualVertices.contains(C), is(true));
     }
 
-    // Same test as above, but with a directed graph
+    /**
+     * Tests the insertVertex method on a directed graph
+     */
     @Test(timeout = 10000)
     public void testInsertVertexDirected() {
         // insert vertices
@@ -132,8 +134,9 @@ public class GraphTest {
         assertThat(actualEdges.contains(bc), is(true));
     }
 
-
-    // Same test as above, but with a directed graph
+    /**
+     * Tests the insertEdges method on a directed graph
+     */
     @Test(timeout = 10000)
     public void testInsertEdgesDirected() {
         CS16Vertex<String> A = _dirGraph.insertVertex("A");
@@ -157,6 +160,9 @@ public class GraphTest {
         assertThat(actualEdges.contains(bc), is(true));
     }
 
+    /**
+     * Tests whether an InvalidVertexException error is thrown on an improper method call for insertEdge
+     */
     @Test(expected = InvalidVertexException.class)
     public void insertEdgeExceptionTest(){
         CS16Vertex<String> A = _graph.insertVertex("A");
@@ -165,6 +171,9 @@ public class GraphTest {
         CS16Edge<String> nullB = _graph.insertEdge(null, B, 1);
     }
 
+    /**
+     * Tests whether an InvalidVertexException error is thrown on an improper method call for removeVertex
+     */
     @Test(expected = InvalidVertexException.class)
     public void removeVertexExceptionTest(){
         CS16Vertex<String> A = _graph.insertVertex("A");
@@ -173,6 +182,9 @@ public class GraphTest {
         _graph.removeVertex(null);
     }
 
+    /**
+     * Tests whether an InvalidEdgeException error is thrown on an improper method call for removeEdge
+     */
     @Test(expected = InvalidEdgeException.class)
     public void removeEdgeExceptionTest(){
         CS16Vertex<String> A = _graph.insertVertex("A");
@@ -181,6 +193,9 @@ public class GraphTest {
         _graph.removeEdge(null);
     }
 
+    /**
+     * Tests whether an InvalidVertexException error is thrown on an improper method call for connectingEdge
+     */
     @Test(expected = InvalidVertexException.class)
     public void connectingEdgeVertexExceptionTest(){
         CS16Vertex<String> A = _graph.insertVertex("A");
@@ -190,6 +205,9 @@ public class GraphTest {
         _graph.connectingEdge(A, null);
     }
 
+    /**
+     * Tests whether a NoSuchEdgeException error is thrown on an improper method call for connectingEdge
+     */
     @Test(expected = NoSuchEdgeException.class)
     public void connectingEdgeEdgeExceptionTest(){
         CS16Vertex<String> A = _graph.insertVertex("A");
@@ -199,22 +217,33 @@ public class GraphTest {
         _graph.connectingEdge(B, C);
     }
 
+    /**
+     * Tests whether an InvalidVertexException error is thrown on an improper method call for incomingEdges
+     */
     @Test(expected = InvalidVertexException.class)
     public void incomingEdgesExceptionTest(){
         _graph.incomingEdges(null);
     }
 
+    /**
+     * Tests whether an InvalidVertexException error is thrown on an improper method call for outgoingEdges
+     */
     @Test(expected = InvalidVertexException.class)
     public void outgoingEdgesExceptionTest(){
         _graph.outgoingEdges(null);
     }
 
+    /**
+     * Tests whether an InvalidVertexException error is thrown on an improper method call for numOutgoingEdgesException
+     */
     @Test(expected = InvalidVertexException.class)
     public void numOutgoingEdgesExceptionTest(){
         _graph.numOutgoingEdges(null);
     }
 
-
+    /**
+     * Tests whether a DirectionException error is thrown on an improper method call for numOutgoingEdges
+     */
     @Test(expected = DirectionException.class)
     public void numOutgoingEdgesDirectionExceptionTest(){
         CS16Vertex<String> A = _graph.insertVertex("A");
@@ -223,7 +252,9 @@ public class GraphTest {
         _graph.numOutgoingEdges(A);
     }
 
-
+    /**
+     * Tests whether an InvalidVertexException error is thrown on an improper method call for opposite
+     */
     @Test(expected = InvalidVertexException.class)
     public void oppositeVertException(){
         CS16Vertex<String> A = _graph.insertVertex("A");
@@ -232,6 +263,9 @@ public class GraphTest {
         _graph.opposite(null, ab);
     }
 
+    /**
+     * Tests whether an InvalidEdgeException error is thrown on an improper method call for opposite
+     */
     @Test(expected = InvalidEdgeException.class)
     public void oppositeEdgeException(){
         CS16Vertex<String> A = _graph.insertVertex("A");
@@ -240,6 +274,9 @@ public class GraphTest {
         _graph.opposite(A, null);
     }
 
+    /**
+     * Tests whether a NoSuchVertexException error is thrown on an improper method call for opposite
+     */
     @Test(expected = NoSuchVertexException.class)
     public void oppositeNoVertexException(){
         CS16Vertex<String> A = _graph.insertVertex("A");
@@ -249,11 +286,17 @@ public class GraphTest {
         _graph.opposite(C, ab);
     }
 
+    /**
+     * Tests whether an InvalidEdgeException error is thrown on an improper method call for endVertices
+     */
     @Test(expected = InvalidEdgeException.class)
     public void endVerticesException(){
         _graph.endVertices(null);
     }
 
+    /**
+     * Tests whether an InvalidVertexException error is thrown on an improper method call for areAdjacent
+     */
     @Test(expected = InvalidVertexException.class)
     public void areAdjacentException(){
         CS16Vertex<String> A = _graph.insertVertex("A");
@@ -262,7 +305,9 @@ public class GraphTest {
         CS16Edge<String> ab = _graph.insertEdge(A, B, 1);
         _graph.areAdjacent(null, B);
     }
-
+    /**
+     * Tests the removeVertex method
+     */
     @Test(timeout = 10000)
     public void testRemoveVertex() {
         // insert vertices
@@ -300,6 +345,9 @@ public class GraphTest {
         assertThat(edges.contains(bc), is(false));
     }
 
+    /**
+     * Tests the areAdjacent method on an undirected graph
+     */
     @Test(timeout = 10000)
     public void testAreAdjacent() {
         // insert vertices
@@ -315,10 +363,11 @@ public class GraphTest {
         assertThat(_graph.areAdjacent(B, A), is(true));
         assertThat(_graph.areAdjacent(A, C), is(false));
         assertThat(_graph.areAdjacent(C, A), is(false));
-
-
     }
 
+    /**
+     * Tests the areAdjacent method on a directed graph
+     */
     @Test(timeout = 10000)
     public void testAreAdjacentDirected() {
         // insert vertices
@@ -336,6 +385,9 @@ public class GraphTest {
         assertThat(_dirGraph.areAdjacent(C, A), is(false));
     }
 
+    /**
+     * Tests the connectingEdge method
+     */
     @Test(timeout = 10000)
     public void testConnectingEdge() {
         // insert vertices
@@ -349,6 +401,9 @@ public class GraphTest {
         assertThat(_graph.connectingEdge(B, C), is(bc));
     }
 
+    /**
+     * Tests the incomingEdges method on an undirected graph
+     */
     @Test(timeout = 10000)
     public void incomingEdges() {
         // insert vertices
@@ -378,6 +433,9 @@ public class GraphTest {
         assertThat(edges.contains(de), is(false));
     }
 
+    /**
+     * Tests the incomingEdges method on a directed graph
+     */
     @Test(timeout = 10000)
     public void incomingEdgesDirected() {
         // insert vertices
@@ -407,6 +465,9 @@ public class GraphTest {
         assertThat(edges.contains(de), is(false));
     }
 
+    /**
+     * Tests the outgoingEdges method on an undirected graph
+     */
     @Test(timeout = 10000)
     public void outgoingEdges() {
         // insert vertices
@@ -436,6 +497,9 @@ public class GraphTest {
         assertThat(edges.contains(de), is(false));
     }
 
+    /**
+     * Tests the outgoingEdges method on a Directed graph
+     */
     @Test(timeout = 10000)
     public void outgoingEdgesDirected() {
         // insert vertices
@@ -466,6 +530,9 @@ public class GraphTest {
         assertThat(_dirGraph.numOutgoingEdges(B), is(2));
     }
 
+    /**
+     * Tests the opposite method
+     */
     @Test(timeout = 10000)
     public void testOpposite() {
         // insert vertices
@@ -494,6 +561,9 @@ public class GraphTest {
         assertThat(_graph.endVertices(ab).contains(C), is(false));
     }
 
+    /**
+     * Tests the clear method
+     */
     @Test(timeout = 10000)
     public void testClear() {
         // insert vertices
@@ -514,6 +584,9 @@ public class GraphTest {
         assertThat(edges.size() == 0, is(true));
     }
 
+    /**
+     * Tests the getNumVertices method
+     */
     @Test(timeout = 10000)
     public void numVerticesTest() {
         // insert vertices
