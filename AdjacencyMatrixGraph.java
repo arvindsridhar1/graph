@@ -133,10 +133,8 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
     @Override
     public CS16Vertex<V> insertVertex(V vertElement) {
         int unique_index = _unique_indices.remove(0);
-        //System.out.println(_unique_indices.get(0));
         CS16Vertex<V> insertableVertex = new GraphVertex<V>(vertElement);
         insertableVertex.setVertexNumber(unique_index);
-        //System.out.println(insertableVertex.getVertexNumber());
         _vertices.add(insertableVertex);
         _numVertices += 1;
         return insertableVertex;
@@ -334,7 +332,6 @@ public class AdjacencyMatrixGraph<V> implements Graph<V> {
             if(_adjMatrix[i][vert.getVertexNumber()] != null){
                 incomingEdges.add(_adjMatrix[i][vert.getVertexNumber()]);
             }
-            System.out.println(_directed);
             if(_directed == false){
                 if(_adjMatrix[vert.getVertexNumber()][i] != null){
                     incomingEdges.add(_adjMatrix[vert.getVertexNumber()][i]);
